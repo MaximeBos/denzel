@@ -6,6 +6,9 @@
     "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.1.1",
+    "i": "^0.3.6",
     "mongodb": "^3.1.13",
     "node-fetch": "^2.3.0",
     "p-limit": "^2.2.0",
@@ -25,5 +28,6 @@
   "bugs": {
     "url": "https://github.com/MaximeBos/denzel/issues"
   },
-  "homepage": "https://github.com/MaximeBos/denzel#readme"
+  "homepage": "https://github.com/MaximeBos/denzel#readme",
+  "devDependencies": {}
 }
