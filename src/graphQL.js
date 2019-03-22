@@ -15,79 +15,41 @@ let collection, database;
 
 const port = 9292;
 /////////////////////////////////
+// Construct a schema, using GraphQL schema language
+var schema = buildSchema(`
+  type Query { 
+    populate: String
+    random: Movie
+    getMovie(id: String): Movie
+    getMovies(id: [String], limit: Int): [Movie]
+  },
+  type Movie {
+    link: String
+    id: String
+    metascore: Int
+    poster: String
+    rating: Float
+    synopsis: String
+    title: String
+    votes: Float
+    year: Int
+    date: String
+    review: String
+  },
+  type Mutation{
+    updateMovie(id: String, date: String, review: String): Movie
+  }
+`);
 
 
-type Mutation {
-    addMovies(author_id: ID, first_name: String, last_name: String): Author
-    updateMovie(author_id: ID!, first_name: String, last_name: String): Author
-    deleteAuthor(author_id: ID!): Author
-}
-
-
-const queries = require('../queries/queries');
-
-const schema = makeExecutableSchema(
-        resolvers: {
-        // Prototypes des fonctions GET
-    //nom requete : ce quelle retourne
-        Query: {
-            population: (_, filters) => queries.getPupulation(filters),
-            random_must_watch: (_, filters) => queries.getMovie(filters),
-            movies: (_, filters) => queries.getMovie(filters),
-        },
-        // Prototypes des fonctions POST, UPDATE, DELETE
-        Mutation: {
-            addMovie: async (_, movie) => {
-                const newMovie = await queries.addMovie(movie);
-
-                return newMovie[0];
-            },
-            updateMovie: async (_, movie) => {
-                const newMovie = await queries.updateMovie(movie);
-
-                return newMovie[0];
-            },
-            deleteMovie: async (_, movieId) => {
-                const deletedMovie = await queries.deleteMovie(movieId);
-
-                return deletedMovie[0];
-            },
-        },
-        // Fonctions de récupération des données d'un auteur à partir d'un commentaire
-        Movie: {
-            author: async (comment) => {
-                const author = await queries.getAuthors({ author_id: comment.author });
-                return author[0];
-            },
-        },
-        // Fonctions de récupération des données de commentaires à partir d'un film
-        Movie: {
-            comments: async (movie) => {
-                const arr = await Promise.all(movie.comments.map(async (comment) => {
-                    const coms = await queries.getComments({ comment_id: comment });
-                    return coms[0];
-                }));
-                return arr;
-            },
-        },
+// The root provides a resolver function for each API endpoint
+var root = {
+    populate: async (source, args) => {
+        const movies = await populate(DENZEL_IMDB_ID);
+        const insertion = await collection.insertMany(movies);
+        return {
+            total: insertion.movie.n
+        };
     },
-});
-
-module.exports = schema;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
 
