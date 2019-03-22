@@ -81,7 +81,7 @@ var root = {
 
 async function populate(actor) {
     try {
-        console.log(📽️ fetching filmography of ${actor}...);
+        console.log(`📽️ fetching filmography of ${actor}...`);
         return await imdb(actor);
     } catch (e) {
         console.error(e);
@@ -92,7 +92,24 @@ let app = express();
 app.use('/graphQL', graphqlHTTP({
     schema: schema,
     rootValue: root,
-    graphiQL: true
+    graphQL: true
 }));
 
 
+//listen on port 9292 and connection to mongoDB atlas
+app.listen(port, () => {
+
+    MongoClient.connect(
+        CONNECTION_URL,
+        { useNewUrlParser: true },
+        (error, client) => {
+            if (error)
+            {
+                throw error;
+            }
+            database = client.db(DATABASE_NAME);
+            collection = database.collection("movies");
+            console.log(`Connected to ${DATABASE_NAME}`);
+        }
+    );
+});
